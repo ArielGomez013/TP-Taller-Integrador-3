@@ -1,5 +1,6 @@
 package com.example.demo.controllers;
 
+import com.example.demo.dto.PagoDTO;
 import com.example.demo.entities.Pago;
 import com.example.demo.entities.Usuario;
 import com.example.demo.services.PagoService;
@@ -24,10 +25,9 @@ public class PagoController {
     private UsuarioService usuarioService;
 
     @GetMapping
-    public ResponseEntity<List<Pago>> listar() {
+    public ResponseEntity<List<PagoDTO>> listar() {
         return ResponseEntity.ok(pagoService.listar());
     }
-
     @GetMapping("/{id}")
     public ResponseEntity<?> buscarPorId(@PathVariable Long id) {
         return pagoService.buscarPorId(id)
@@ -36,7 +36,7 @@ public class PagoController {
     }
 
     @GetMapping("/cuota/{cuotaId}")
-    public ResponseEntity<List<Pago>> buscarPorCuota(@PathVariable Long cuotaId) {
+    public ResponseEntity<List<PagoDTO>> buscarPorCuota(@PathVariable Long cuotaId) {
         return ResponseEntity.ok(pagoService.buscarPorCuota(cuotaId));
     }
 
@@ -60,7 +60,7 @@ public class PagoController {
                 }
             }
 
-            Pago pago = pagoService.registrarPago(idCuota, importe, medioPago, operador);
+            PagoDTO pago = pagoService.registrarPago(idCuota, importe, medioPago, operador);
             return new ResponseEntity<>(pago, HttpStatus.CREATED);
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(Map.of("message", e.getMessage()));

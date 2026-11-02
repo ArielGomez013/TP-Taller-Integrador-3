@@ -1,5 +1,6 @@
 package com.example.demo.services;
 
+import com.example.demo.dto.PagoDTO;
 import com.example.demo.entities.Cuota;
 import com.example.demo.entities.Pago;
 import com.example.demo.entities.Usuario;
@@ -22,20 +23,22 @@ public class PagoService {
     @Autowired
     private CuotaRepository cuotaRepository;
 
-    public List<Pago> listar() {
-        return pagoRepository.findAll();
+    @Transactional(readOnly = true)
+    public List<PagoDTO> listar() {
+        return pagoRepository.findAll().stream().map(PagoDTO::desde).toList();
     }
 
-    public Optional<Pago> buscarPorId(Long id) {
-        return pagoRepository.findById(id);
+    @Transactional(readOnly = true)
+    public Optional<PagoDTO> buscarPorId(Long id) {
+        return pagoRepository.findById(id).map(PagoDTO::desde);
     }
 
-    public List<Pago> buscarPorCuota(Long idCuota) {
-        return pagoRepository.findByCuotaIdCuota(idCuota);
+    @Transactional(readOnly = true)
+    public List<PagoDTO> buscarPorCuota(Long idCuota) {
+        return pagoRepository.findByCuotaIdCuota(idCuota).stream().map(PagoDTO::desde).toList();
     }
-
     @Transactional
-    public Pago registrarPago(Long idCuota, BigDecimal importePago, String medioPago, Usuario usuarioOperador) {
+    public PagoDTO registrarPago(Long idCuota, BigDecimal importePago, String medioPago, Usuario usuarioOperador) {
         Cuota cuota = cuotaRepository.findById(idCuota)
                 .orElseThrow(() -> new RuntimeException("Cuota no encontrada"));
 
@@ -65,6 +68,6 @@ public class PagoService {
             cuotaRepository.save(cuota);
         }
 
-        return pago;
+        return PagoDTO.desde(pago);
     }
 }

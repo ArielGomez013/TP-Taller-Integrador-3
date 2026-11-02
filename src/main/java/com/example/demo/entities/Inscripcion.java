@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import java.time.LocalDate;
+import com.example.demo.enums.EstadoInscripcion;
 
 @Entity
 @Getter
@@ -18,7 +19,7 @@ import java.time.LocalDate;
 })
 public class Inscripcion {
 
-    public enum EstadoInscripcion { ACTIVA, ANULADA }
+
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

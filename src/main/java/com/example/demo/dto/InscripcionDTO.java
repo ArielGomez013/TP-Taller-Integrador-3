@@ -1,6 +1,6 @@
 package com.example.demo.dto;
 
-import com.example.demo.entities.Inscripcion.EstadoInscripcion;
+import com.example.demo.enums.EstadoInscripcion;
 
 import java.time.LocalDate;
 

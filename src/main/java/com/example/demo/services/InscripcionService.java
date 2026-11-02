@@ -5,7 +5,7 @@ import com.example.demo.dto.InscripcionRequest;
 import com.example.demo.entities.Alumno;
 import com.example.demo.entities.Curso;
 import com.example.demo.entities.Inscripcion;
-import com.example.demo.entities.Inscripcion.EstadoInscripcion;
+import com.example.demo.enums.EstadoInscripcion;
 import com.example.demo.exceptions.RecursoNoEncontradoException;
 import com.example.demo.exceptions.ReglaNegocioException;
 import com.example.demo.repositories.AlumnoRepository;

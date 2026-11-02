@@ -9,7 +9,7 @@ import com.example.demo.entities.Asistencia;
 import com.example.demo.entities.Asistencia.EstadoAsistencia;
 import com.example.demo.entities.Curso;
 import com.example.demo.entities.Inscripcion;
-import com.example.demo.entities.Inscripcion.EstadoInscripcion;
+import com.example.demo.enums.EstadoInscripcion;
 import com.example.demo.exceptions.RecursoNoEncontradoException;
 import com.example.demo.exceptions.ReglaNegocioException;
 import com.example.demo.repositories.*;
@@ -36,10 +36,9 @@ public class AsistenciaService {
         Curso curso = cursoRepository.findById(req.cursoId())
                 .orElseThrow(() -> new RecursoNoEncontradoException("curso", req.cursoId()));
 
-        // RN13: el docente debe tener asignado el curso
-        //if (!cursoMateriaRepository.existsByCursoAndDocenteIdDocente(curso, req.docenteId())) {
-        //    throw new ReglaNegocioException("El docente no tiene asignado este curso");
-        // }
+        if (!cursoMateriaRepository.existsByCursoIdCursoAndDocenteIdDocente(curso.getIdCurso(), req.docenteId())) {
+            throw new ReglaNegocioException("El docente no tiene asignado este curso (RN13)");
+        }
 
         List<AsistenciaDTO> registradas = new ArrayList<>();
         for (AsistenciaItem item : req.asistencias()) {

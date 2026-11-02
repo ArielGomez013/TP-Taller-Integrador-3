@@ -4,6 +4,9 @@ import jakarta.persistence.*;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 
 @Entity
 @Table(name = "CUOTA", uniqueConstraints = {
@@ -31,8 +34,10 @@ public class Cuota {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_matricula", nullable = false)
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     private Matricula matricula;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "cuota", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Pago> pagos;
 
@@ -60,4 +65,5 @@ public class Cuota {
     public void setMatricula(Matricula matricula) { this.matricula = matricula; }
     public List<Pago> getPagos() { return pagos; }
     public void setPagos(List<Pago> pagos) { this.pagos = pagos; }
+    public BigDecimal getSaldo() { return calcularSaldo(); }
 }

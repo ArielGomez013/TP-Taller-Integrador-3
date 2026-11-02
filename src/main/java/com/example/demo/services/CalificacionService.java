@@ -4,7 +4,7 @@ import com.example.demo.dto.CalificacionDTO;
 import com.example.demo.dto.CalificacionRequest;
 import com.example.demo.dto.CalificacionUpdateRequest;
 import com.example.demo.entities.*;
-import com.example.demo.entities.Inscripcion.EstadoInscripcion;
+import com.example.demo.enums.EstadoInscripcion;
 import com.example.demo.exceptions.RecursoNoEncontradoException;
 import com.example.demo.exceptions.ReglaNegocioException;
 import com.example.demo.repositories.AlumnoRepository;
@@ -96,7 +96,8 @@ public class CalificacionService {
 
     // RN12: acá se DEFINE. Solo compara, no consulta la base.
     private void verificarDocente(Long docenteId, CursoMateria cursoMateria) {
-        if (!cursoMateria.getDocente().getIdDocente().equals(docenteId)) {
+        Docente asignado = cursoMateria.getDocente();
+        if (asignado == null || !asignado.getIdDocente().equals(docenteId)) {
             throw new ReglaNegocioException("El docente no tiene asignada esta materia en el curso");
         }
     }

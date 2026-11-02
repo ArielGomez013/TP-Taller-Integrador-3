@@ -1,0 +1,270 @@
+/* =====================================================
+   INSTITUTO EDUCATIVO - ESTILOS BASE MODULAR
+   ===================================================== */
+
+/* ---------- Variables CSS (tema universitario) ---------- */
+:root {
+    --primary:        #1a3a5c;   /* Azul universitario */
+    --primary-light:  #2a5298;
+    --accent:         #e63946;   /* Rojo acento */
+    --success:        #2d6a4f;
+    --warning:        #e9c46a;
+    --info:           #219ebc;
+    --bg-light:       #f0f4f8;
+    --card-shadow:    0 4px 16px rgba(26,58,92,.10);
+    --card-shadow-hover: 0 8px 28px rgba(26,58,92,.18);
+    --radius:         0.75rem;
+    --transition:     all .25s ease;
+}
+
+/* ---------- Base ---------- */
+body {
+    background-color: var(--bg-light);
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    color: #2d3748;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+main { flex: 1; }
+
+/* ---------- Navbar ---------- */
+.navbar-universidad {
+    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+    box-shadow: 0 2px 12px rgba(26,58,92,.30);
+}
+
+.navbar-universidad .navbar-brand {
+    font-weight: 700;
+    font-size: 1.35rem;
+    letter-spacing: -.5px;
+}
+
+.navbar-universidad .nav-link {
+    color: rgba(255,255,255,.85) !important;
+    font-weight: 500;
+    transition: var(--transition);
+    border-radius: .4rem;
+    padding: .4rem .75rem !important;
+}
+
+.navbar-universidad .nav-link:hover,
+.navbar-universidad .nav-link.active {
+    color: #fff !important;
+    background: rgba(255,255,255,.15);
+}
+
+/* ---------- Cards ---------- */
+.card {
+    border: none;
+    border-radius: var(--radius);
+    box-shadow: var(--card-shadow);
+    transition: var(--transition);
+}
+
+.card:hover {
+    box-shadow: var(--card-shadow-hover);
+    transform: translateY(-2px);
+}
+
+.card-header {
+    border-radius: var(--radius) var(--radius) 0 0 !important;
+    font-weight: 600;
+}
+
+.card-header.bg-primary-custom {
+    background: var(--primary) !important;
+    color: #fff;
+}
+
+/* ---------- Hero Section ---------- */
+.hero-section {
+    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 60%, var(--info) 100%);
+    color: #fff;
+    padding: 5rem 0 4rem;
+    position: relative;
+    overflow: hidden;
+}
+
+.hero-section::before {
+    content: '';
+    position: absolute;
+    top: -40%;
+    right: -10%;
+    width: 500px;
+    height: 500px;
+    background: rgba(255,255,255,.05);
+    border-radius: 50%;
+}
+
+.hero-section h1 { font-weight: 800; font-size: 2.8rem; }
+.hero-section p   { font-size: 1.15rem; opacity: .9; }
+
+/* ---------- Quick-access cards (Dashboard) ---------- */
+.quick-card {
+    text-decoration: none;
+    color: inherit;
+    display: block;
+}
+
+.quick-card .card {
+    border-top: 4px solid var(--primary);
+    transition: var(--transition);
+}
+
+.quick-card:hover .card { border-top-color: var(--accent); }
+
+.quick-card .icon-wrap {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: var(--bg-light);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.75rem;
+    margin-bottom: .75rem;
+    color: var(--primary);
+    transition: var(--transition);
+}
+
+.quick-card:hover .icon-wrap {
+    background: var(--primary);
+    color: #fff;
+}
+
+/* ---------- Tables ---------- */
+.table-responsive { border-radius: var(--radius); overflow: hidden; }
+
+.table thead th {
+    background: var(--primary);
+    color: #fff;
+    font-weight: 600;
+    border: none;
+    white-space: nowrap;
+}
+
+.table tbody tr { transition: var(--transition); }
+.table tbody tr:hover { background: rgba(26,58,92,.05); }
+
+/* ---------- Badges de estado ---------- */
+.badge-activa    { background-color: #2d6a4f !important; color: #fff; }
+.badge-anulada   { background-color: var(--accent) !important; color: #fff; }
+.badge-presente  { background-color: #2d6a4f !important; color: #fff; }
+.badge-ausente   { background-color: var(--accent) !important; color: #fff; }
+.badge-tardanza  { background-color: #e9c46a !important; color: #222; }
+.badge-justificado { background-color: var(--info) !important; color: #fff; }
+
+.badge-nota-alta  { background-color: #2d6a4f !important; color: #fff; }
+.badge-nota-media { background-color: #e9c46a !important; color: #222; }
+.badge-nota-baja  { background-color: var(--accent) !important; color: #fff; }
+
+.badge-tipo {
+    background-color: var(--primary-light) !important;
+    color: #fff;
+    font-size: .75rem;
+}
+
+/* ---------- Formularios ---------- */
+.form-control:focus, .form-select:focus {
+    border-color: var(--primary-light);
+    box-shadow: 0 0 0 .2rem rgba(42,82,152,.2);
+}
+
+.btn-primary-custom {
+    background: var(--primary);
+    border-color: var(--primary);
+    color: #fff;
+    font-weight: 600;
+    transition: var(--transition);
+}
+
+.btn-primary-custom:hover {
+    background: var(--primary-light);
+    border-color: var(--primary-light);
+    color: #fff;
+}
+
+.btn-accent {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: #fff;
+    font-weight: 600;
+}
+
+.btn-accent:hover { filter: brightness(1.1); color: #fff; }
+
+/* ---------- Alerts ---------- */
+.alert { border-radius: var(--radius); border: none; font-weight: 500; }
+
+/* ---------- Spinner overlay ---------- */
+.spinner-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(255,255,255,.6);
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* ---------- Progress bar asistencia ---------- */
+.progress { border-radius: 2rem; height: 1.1rem; }
+.progress-bar { border-radius: 2rem; font-weight: 600; }
+
+/* ---------- Tabla dinámica asistencia ---------- */
+.attendance-row { animation: fadeInRow .2s ease; }
+
+@keyframes fadeInRow {
+    from { opacity: 0; transform: translateY(-6px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ---------- Footer ---------- */
+footer {
+    background: var(--primary);
+    color: rgba(255,255,255,.8);
+    padding: 2rem 0;
+    margin-top: auto;
+}
+
+footer a { color: rgba(255,255,255,.65); text-decoration: none; }
+footer a:hover { color: #fff; }
+
+/* ---------- Sección de configuración (CORS info) ---------- */
+.config-section {
+    background: #fff;
+    border-left: 5px solid var(--primary);
+    border-radius: .5rem;
+    padding: 1.5rem;
+}
+
+.config-section pre {
+    background: #1e2d3d;
+    color: #a8d8ea;
+    padding: 1rem;
+    border-radius: .5rem;
+    font-size: .85rem;
+    overflow-x: auto;
+}
+
+/* ---------- Tabs ---------- */
+.nav-tabs .nav-link { color: var(--primary); font-weight: 500; }
+.nav-tabs .nav-link.active {
+    color: var(--primary);
+    border-bottom: 3px solid var(--primary);
+    font-weight: 700;
+}
+
+/* ---------- Responsive ---------- */
+@media (max-width: 768px) {
+    .hero-section h1 { font-size: 2rem; }
+    .quick-card .icon-wrap { width: 48px; height: 48px; font-size: 1.4rem; }
+    .table { font-size: .85rem; }
+}
+
+@media (max-width: 576px) {
+    .hero-section { padding: 3rem 0 2rem; }
+    .hero-section h1 { font-size: 1.6rem; }
+}

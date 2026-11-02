@@ -7,7 +7,7 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
-  <link rel="stylesheet" href="../css/styles.css" />
+  <link rel="stylesheet" href="../calificaciones/calificaciones.css" />
   <style>
     /* Slider de nota */
     #nca-nota-range { accent-color: var(--primary); }
@@ -34,12 +34,12 @@
       <div class="collapse navbar-collapse" id="mainNav">
         <ul class="navbar-nav ms-auto gap-1">
           <li class="nav-item"><a class="nav-link" href="../index.html"><i class="bi bi-house-door me-1"></i>Inicio</a></li>
-          <li class="nav-item"><a class="nav-link" href="../inscripciones/index.html"><i class="bi bi-person-plus me-1"></i>Inscripciones</a></li>
-          <li class="nav-item"><a class="nav-link" href="../asistencias/index.html"><i class="bi bi-calendar-check me-1"></i>Asistencias</a></li>
-          <li class="nav-item"><a class="nav-link" href="../evaluaciones/index.html"><i class="bi bi-journal-text me-1"></i>Evaluaciones</a></li>
-          <li class="nav-item"><a class="nav-link active" href="index.html"><i class="bi bi-star-half me-1"></i>Calificaciones</a></li>
-          <li class="nav-item"><a class="nav-link" href="../alumnos/index.html"><i class="bi bi-people me-1"></i>Alumnos</a></li>
-          <li class="nav-item"><a class="nav-link" href="../matriculas/index.html"><i class="bi bi-receipt me-1"></i>Matrículas</a></li>
+          <li class="nav-item"><a class="nav-link" href="../inscripciones/inscripciones.html"><i class="bi bi-person-plus me-1"></i>Inscripciones</a></li>
+          <li class="nav-item"><a class="nav-link" href="../asistencias/asistencias.html"><i class="bi bi-calendar-check me-1"></i>Asistencias</a></li>
+          <li class="nav-item"><a class="nav-link" href="../evaluaciones/evaluaciones.html"><i class="bi bi-journal-text me-1"></i>Evaluaciones</a></li>
+          <li class="nav-item"><a class="nav-link active" href="calificaciones.html"><i class="bi bi-star-half me-1"></i>Calificaciones</a></li>
+          <li class="nav-item"><a class="nav-link" href="../alumnos/alumnos.html"><i class="bi bi-people me-1"></i>Alumnos</a></li>
+          <li class="nav-item"><a class="nav-link" href="../matriculas/matriculas.html"><i class="bi bi-receipt me-1"></i>Matrículas</a></li>
         </ul>
         <div class="ms-lg-3 mt-2 mt-lg-0" id="navbar-user-info"></div>
       </div>
@@ -265,264 +265,8 @@
       <small>Instituto Educativo &mdash; Sistema de Gestión Universitaria</small>
     </div>
   </footer>
-
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
   <script src="../js/api.js"></script>
-  <script>
-  /* =====================================================
-     CALIFICACIONES — Lógica de UI
-     ===================================================== */
-
-  /* ---------- SINCRONIZAR SLIDER ↔ INPUT NUMÉRICO ---------- */
-  const rangeEl   = document.getElementById('nca-nota-range');
-  const displayEl = document.getElementById('nca-nota-display');
-  const numEl     = document.getElementById('nca-nota-num');
-  const validMsg  = document.getElementById('nota-validation-msg');
-
-  function actualizarDisplayNota(val) {
-    const n = parseFloat(val);
-    displayEl.textContent = n;
-    // Color según nota
-    if (n >= 6) {
-      displayEl.style.color = 'var(--success)';
-    } else if (n >= 4) {
-      displayEl.style.color = '#b5860d';
-    } else {
-      displayEl.style.color = 'var(--accent)';
-    }
-  }
-
-  rangeEl.addEventListener('input', () => {
-    numEl.value = rangeEl.value;
-    actualizarDisplayNota(rangeEl.value);
-  });
-
-  numEl.addEventListener('input', () => {
-    const v = parseFloat(numEl.value);
-    if (v >= 1 && v <= 10) {
-      rangeEl.value = v;
-      actualizarDisplayNota(v);
-      validMsg.classList.add('d-none');
-    } else {
-      validMsg.classList.remove('d-none');
-    }
-  });
-
-  // Inicializar display
-  actualizarDisplayNota(rangeEl.value);
-
-  /* ---------- FORM: NUEVA CALIFICACIÓN ---------- */
-  document.getElementById('form-nueva-cali').addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const alertEl = document.getElementById('form-nueva-cali-alert');
-    alertEl.innerHTML = '';
-
-    const docenteId    = parseInt(document.getElementById('nca-docente-id').value);
-    const inscripcionId = parseInt(document.getElementById('nca-inscripcion-id').value);
-    const evaluacionId  = parseInt(document.getElementById('nca-evaluacion-id').value);
-    const nota          = parseFloat(numEl.value);
-    const observaciones = document.getElementById('nca-observaciones').value.trim() || undefined;
-
-    // Validación client-side
-    if (!docenteId || !inscripcionId || !evaluacionId) {
-      showAlert(alertEl, 'Complete todos los campos obligatorios.', 'warning');
-      return;
-    }
-    if (isNaN(nota) || nota < 1 || nota > 10) {
-      showAlert(alertEl, 'La nota debe estar entre 1 y 10.', 'warning');
-      validMsg.classList.remove('d-none');
-      return;
-    }
-
-    setLoading(true);
-    try {
-      const nueva = await CalificacionAPI.crear({
-        docenteId, inscripcionId, evaluacionId, nota,
-        ...(observaciones ? { observaciones } : {}),
-      });
-      showAlert(document.getElementById('alert-container'),
-        `✅ Calificación registrada. ID: ${nueva.id} — Nota: ${nueva.nota}`, 'success');
-      document.getElementById('form-nueva-cali').reset();
-      rangeEl.value = 7; numEl.value = 7; actualizarDisplayNota(7);
-    } catch (err) {
-      showAlert(alertEl, err.message, 'danger');
-    } finally {
-      setLoading(false);
-    }
-  });
-
-  /* ---------- CARGAR CALIFICACIÓN PARA EDITAR ---------- */
-  // Nota: el backend no tiene GET /calificaciones/{id}, usamos la búsqueda
-  // por alumno o evaluación; aquí implementamos una búsqueda genérica por
-  // el ID que el usuario puede obtener de la tabla de resultados.
-  // El campo "Cargar" busca en las listas cargadas recientemente.
-  // Para una experiencia completa, el backend debería exponer GET /calificaciones/{id}.
-  // Mientras tanto, pedimos al usuario docenteId + nota directamente tras ingresar el ID.
-  document.getElementById('btn-cargar-cali').addEventListener('click', () => {
-    const id = parseInt(document.getElementById('edit-cali-id').value);
-    const alertEl = document.getElementById('edit-load-alert');
-    if (!id) { showAlert(alertEl, 'Ingrese un ID de calificación válido.', 'warning'); return; }
-    alertEl.innerHTML = '';
-
-    // Intentar encontrar en filas actuales de la tabla
-    const fila = calificacionesCache.find(c => c.id === id);
-    if (fila) {
-      cargarFormularioEdicion(fila);
-    } else {
-      // No está en caché: mostrar formulario vacío con el ID para edición directa
-      showAlert(alertEl,
-        'No se encontró esa calificación en los resultados actuales. Búsquela primero por alumno o evaluación, o complete los campos manualmente.',
-        'info');
-      document.getElementById('edit-cali-id-hidden').value = id;
-      document.getElementById('edit-docente-id').value    = '';
-      document.getElementById('edit-nota').value          = '';
-      document.getElementById('edit-observacion').value   = '';
-      document.getElementById('form-edit-wrap').classList.remove('d-none');
-    }
-  });
-
-  function cargarFormularioEdicion(dto) {
-    document.getElementById('edit-cali-id-hidden').value = dto.id;
-    document.getElementById('edit-docente-id').value     = '';   // no viene en el DTO
-    document.getElementById('edit-nota').value           = dto.nota;
-    document.getElementById('edit-observacion').value    = dto.observaciones || '';
-    document.getElementById('form-edit-wrap').classList.remove('d-none');
-    document.getElementById('form-edit-cali-alert').innerHTML = '';
-  }
-
-  /* ---------- GUARDAR CAMBIOS EDICIÓN ---------- */
-  document.getElementById('form-edit-cali').addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const alertEl = document.getElementById('form-edit-cali-alert');
-    alertEl.innerHTML = '';
-
-    const id         = parseInt(document.getElementById('edit-cali-id-hidden').value);
-    const docenteId  = parseInt(document.getElementById('edit-docente-id').value);
-    const nota       = parseFloat(document.getElementById('edit-nota').value);
-    const observacion = document.getElementById('edit-observacion').value.trim() || undefined;
-
-    if (!docenteId) {
-      showAlert(alertEl, 'El Docente ID es obligatorio para modificar.', 'warning');
-      return;
-    }
-    if (isNaN(nota) || nota < 1 || nota > 10) {
-      showAlert(alertEl, 'La nota debe estar entre 1 y 10.', 'warning');
-      return;
-    }
-
-    setLoading(true);
-    try {
-      const actualizada = await CalificacionAPI.actualizar(id, {
-        docenteId, nota, ...(observacion ? { observacion } : {}),
-      });
-      showAlert(document.getElementById('alert-container'),
-        `✅ Calificación #${id} actualizada. Nueva nota: ${actualizada.nota}`, 'success');
-      document.getElementById('form-edit-wrap').classList.add('d-none');
-      document.getElementById('edit-cali-id').value = '';
-    } catch (err) {
-      showAlert(alertEl, err.message, 'danger');
-    } finally {
-      setLoading(false);
-    }
-  });
-
-  /* ---------- CANCELAR EDICIÓN ---------- */
-  document.getElementById('btn-cancelar-edit-cali').addEventListener('click', () => {
-    document.getElementById('form-edit-wrap').classList.add('d-none');
-    document.getElementById('edit-cali-id').value = '';
-    document.getElementById('edit-load-alert').innerHTML = '';
-  });
-
-  /* ---------- Caché de calificaciones cargadas ---------- */
-  let calificacionesCache = [];
-
-  /* ---------- BUSCAR POR ALUMNO ---------- */
-  document.getElementById('btn-buscar-por-alumno').addEventListener('click', async () => {
-    const id = parseInt(document.getElementById('search-alumno-id').value);
-    const alertEl = document.getElementById('search-cali-alert');
-    if (!id) { showAlert(alertEl, 'Ingrese un Alumno ID válido.', 'warning'); return; }
-    alertEl.innerHTML = '';
-
-    setLoading(true);
-    try {
-      const lista = await CalificacionAPI.porAlumno(id);
-      calificacionesCache = lista || [];
-      renderTablaCalificaciones(lista);
-    } catch (err) {
-      showAlert(alertEl, err.message, 'danger');
-    } finally {
-      setLoading(false);
-    }
-  });
-
-  /* ---------- BUSCAR POR EVALUACIÓN ---------- */
-  document.getElementById('btn-buscar-por-eval').addEventListener('click', async () => {
-    const id = parseInt(document.getElementById('search-eval-id').value);
-    const alertEl = document.getElementById('search-cali-alert');
-    if (!id) { showAlert(alertEl, 'Ingrese un ID de evaluación válido.', 'warning'); return; }
-    alertEl.innerHTML = '';
-
-    setLoading(true);
-    try {
-      const lista = await CalificacionAPI.porEvaluacion(id);
-      calificacionesCache = lista || [];
-      renderTablaCalificaciones(lista);
-    } catch (err) {
-      showAlert(alertEl, err.message, 'danger');
-    } finally {
-      setLoading(false);
-    }
-  });
-
-  /* ---------- EDITAR INLINE DESDE TABLA ---------- */
-  document.getElementById('tbody-calificaciones').addEventListener('click', (e) => {
-    const btn = e.target.closest('[data-action="editar-cali"]');
-    if (!btn) return;
-    const id = parseInt(btn.dataset.id);
-    const dto = calificacionesCache.find(c => c.id === id);
-    document.getElementById('edit-cali-id').value = id;
-    if (dto) {
-      cargarFormularioEdicion(dto);
-    } else {
-      document.getElementById('btn-cargar-cali').click();
-    }
-    // Scroll a sección de edición
-    document.getElementById('edit-cali-id').scrollIntoView({ behavior: 'smooth', block: 'center' });
-  });
-
-  /* ---------- RENDER TABLA ---------- */
-  function renderTablaCalificaciones(lista) {
-    const tbody = document.getElementById('tbody-calificaciones');
-    if (!lista || lista.length === 0) {
-      renderEmpty(tbody, 7, 'No se encontraron calificaciones');
-      return;
-    }
-    tbody.innerHTML = lista.map(c => `
-      <tr>
-        <td><strong>#${escapeHtml(String(c.id))}</strong></td>
-        <td>${escapeHtml(String(c.alumnoId))}</td>
-        <td>${escapeHtml(String(c.evaluacionId))}</td>
-        <td>${escapeHtml(String(c.inscripcionId))}</td>
-        <td>${badgeNota(c.nota)}</td>
-        <td class="text-muted small">${escapeHtml(c.observaciones || '—')}</td>
-        <td>
-          <button class="btn btn-sm btn-outline-primary" data-action="editar-cali" data-id="${c.id}">
-            <i class="bi bi-pencil me-1"></i>Editar
-          </button>
-        </td>
-      </tr>`).join('');
-  }
-
-  /* ---------- Enter en búsquedas ---------- */
-  document.getElementById('search-alumno-id').addEventListener('keydown', e => {
-    if (e.key === 'Enter') document.getElementById('btn-buscar-por-alumno').click();
-  });
-  document.getElementById('search-eval-id').addEventListener('keydown', e => {
-    if (e.key === 'Enter') document.getElementById('btn-buscar-por-eval').click();
-  });
-  document.getElementById('edit-cali-id').addEventListener('keydown', e => {
-    if (e.key === 'Enter') document.getElementById('btn-cargar-cali').click();
-  });
-  </script>
+  <script src="calificaciones.js"></script>
 </body>
 </html>

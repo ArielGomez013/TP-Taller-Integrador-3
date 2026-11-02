@@ -1,9 +1,10 @@
 package com.example.demo.entities; // Tu paquete oficial unificado
-
 import jakarta.persistence.*;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @Entity
 @Table(name = "MATRICULA", uniqueConstraints = {
@@ -28,12 +29,15 @@ public class Matricula {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_alumno", nullable = false)
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     private Alumno alumno;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_ciclo", nullable = false)
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     private CicloLectivo cicloLectivo;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "matricula", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Cuota> cuotas;
 
@@ -54,3 +58,4 @@ public class Matricula {
     public List<Cuota> getCuotas() { return cuotas; }
     public void setCuotas(List<Cuota> cuotas) { this.cuotas = cuotas; }
 }
+
