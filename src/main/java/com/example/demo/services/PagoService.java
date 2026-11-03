@@ -63,7 +63,7 @@ public class PagoService {
         pagoRepository.save(pago);
 
         // [RN08] Una cuota pasa a PAGADA si la suma cubre el importe completo
-        if (cuota.calcularSaldo().compareTo(BigDecimal.ZERO) == 0) {
+        if (saldoPendiente.subtract(importePago).compareTo(BigDecimal.ZERO) == 0) {
             cuota.setEstado("PAGADA");
             cuotaRepository.save(cuota);
         }

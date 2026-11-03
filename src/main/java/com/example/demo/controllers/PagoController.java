@@ -1,7 +1,6 @@
 package com.example.demo.controllers;
 
 import com.example.demo.dto.PagoDTO;
-import com.example.demo.entities.Pago;
 import com.example.demo.entities.Usuario;
 import com.example.demo.services.PagoService;
 import com.example.demo.services.UsuarioService;
@@ -47,17 +46,17 @@ public class PagoController {
             BigDecimal importe = new BigDecimal(req.get("importe").toString());
             String medioPago = req.get("medioPago").toString();
 
-            Usuario operador = null;
-            if (req.get("idUsuario") != null) {
-                Long idUsuario = Long.valueOf(req.get("idUsuario").toString());
-                operador = usuarioService.buscarPorId(idUsuario).orElse(null);
+            if (req.get("idUsuario") == null) {
+                throw new IllegalArgumentException("Debe iniciar sesión para registrar un pago");
             }
-            if (operador == null) {
-                // Si no se especifica operador, tomar el primer usuario disponible o crear uno mock
-                List<Usuario> usuarios = usuarioService.listar();
-                if (!usuarios.isEmpty()) {
-                    operador = usuarios.get(0);
-                }
+            Long idUsuario = Long.valueOf(req.get("idUsuario").toString());
+            Usuario operador = usuarioService.buscarPorId(idUsuario)
+                    .orElseThrow(() -> new IllegalArgumentException("Usuario operador no encontrado"));
+
+            String rol = operador.getRol() != null ? operador.getRol().getNombre() : "";
+            if (!rol.equalsIgnoreCase("ADMIN") && !rol.equalsIgnoreCase("ADMINISTRATIVO")) {
+                throw new IllegalArgumentException(
+                        "Solo el administrador o el personal administrativo pueden registrar pagos");
             }
 
             PagoDTO pago = pagoService.registrarPago(idCuota, importe, medioPago, operador);

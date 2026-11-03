@@ -31,7 +31,7 @@
     const q = document.getElementById('filtro-pagos').value.toLowerCase().trim();
     const filtrados = pagosList.filter(p => {
     const id = String(p.idPago || '');
-    const cuotaId = p.cuota ? String(p.cuota.idCuota) : '';
+    const cuotaId = String(p.idCuota ?? '');
     const medio = (p.medioPago || '').toLowerCase();
     return !q || id.includes(q) || cuotaId.includes(q) || medio.includes(q);
 });
@@ -45,7 +45,7 @@
     tbody.innerHTML = filtrados.map(p => `
         <tr>
           <td><strong>#${p.idPago}</strong></td>
-          <td><span class="badge bg-light text-dark border">Cuota #${p.cuota ? p.cuota.idCuota : '—'}</span></td>
+          <td><span class="badge bg-light text-dark border">Cuota #${p.idCuota ?? '—'}</span></td>
           <td>${formatDate(p.fecha)}</td>
           <td><strong class="text-success">${formatCurrency(p.importe)}</strong></td>
           <td><span class="badge bg-info text-dark">${escapeHtml(p.medioPago || '—')}</span></td>

@@ -500,6 +500,13 @@ function renderEmpty(tbody, colspan, msg = 'No hay datos para mostrar') {
     </tr>`;
 }
 
+function rolActual() {
+  return String(AuthAPI.getUsuario()?.rol || '').toUpperCase();
+}
+function tieneRol(...roles) {
+  return roles.map(r => r.toUpperCase()).includes(rolActual());
+}
+
 document.addEventListener('DOMContentLoaded', () => {
   AuthAPI.initNavbarUser();
 });

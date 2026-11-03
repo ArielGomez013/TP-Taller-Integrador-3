@@ -27,6 +27,7 @@
     (a.nombre && a.nombre.toLowerCase().includes(q));
     const matchEst = !est || (a.estado && a.estado.toUpperCase() === est);
     return matchQ && matchEst;
+
 });
 
     document.getElementById('contador-alumnos').textContent = filtrados.length;
@@ -48,14 +49,14 @@
           <td>${formatDate(a.fechaNacimiento)}</td>
           <td>
             <span class="badge ${a.estado === 'ACTIVO' ? 'bg-success' : 'bg-secondary'}">${escapeHtml(a.estado)}</span>
-          </td>
           <td class="text-center">
             <button class="btn btn-sm btn-outline-primary me-1" onclick="abrirEditar(${a.idAlumno})" title="Editar">
               <i class="bi bi-pencil"></i>
             </button>
-            <button class="btn btn-sm btn-outline-danger" onclick="abrirEliminar(${a.idAlumno}, '${escapeHtml(a.apellido + ', ' + a.nombre)}')" title="Eliminar">
-              <i class="bi bi-trash"></i>
-            </button>
+            ${tieneRol('ADMIN') ? `
+              <button class="btn btn-sm btn-outline-danger" onclick="abrirEliminar(${a.idAlumno}, '${escapeHtml(a.apellido + ', ' + a.nombre)}')" title="Eliminar">
+                <i class="bi bi-trash"></i>
+              </button>` : ''}
           </td>
         </tr>
       `).join('');

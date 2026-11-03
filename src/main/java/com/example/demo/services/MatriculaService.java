@@ -2,6 +2,7 @@ package com.example.demo.services;
 
 import com.example.demo.entities.Cuota;
 import com.example.demo.entities.Matricula;
+import com.example.demo.exceptions.ReglaNegocioException;
 import com.example.demo.repositories.MatriculaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -29,6 +30,12 @@ public class MatriculaService {
     }
 
     public Matricula guardar(Matricula matricula) {
+        // RN: un alumno solo puede tener una matrícula por ciclo lectivo
+        if (matricula.getIdMatricula() == null
+                && matriculaRepository.existsByAlumnoAndCicloLectivo(
+                matricula.getAlumno(), matricula.getCicloLectivo())) {
+            throw new ReglaNegocioException("El alumno ya está matriculado en este ciclo lectivo");
+        }
         return matriculaRepository.save(matricula);
     }
 
