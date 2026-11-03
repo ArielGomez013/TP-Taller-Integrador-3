@@ -1,8 +1,12 @@
 package com.example.demo.controllers;
 
+import com.example.demo.dto.CuotaDTO;
+import com.example.demo.dto.SituacionAdministrativaDTO;
 import com.example.demo.entities.Alumno;
 import com.example.demo.services.AlumnoService;
+import com.example.demo.services.CuotaService;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -14,9 +18,11 @@ import java.util.Optional;
 public class AlumnoController {
 
     private final AlumnoService alumnoService;
+    private final CuotaService cuotaService;
 
-    public AlumnoController(AlumnoService alumnoService) {
+    public AlumnoController(AlumnoService alumnoService, CuotaService cuotaService) {
         this.alumnoService = alumnoService;
+        this.cuotaService = cuotaService;
     }
 
     @GetMapping
@@ -54,5 +60,25 @@ public class AlumnoController {
         alumno.setIdAlumno(existente.getIdAlumno());
 
         return alumnoService.guardar(alumno);
+    }
+
+    // [RF-14] GET /api/alumnos/{id}/cuotas — Lista todas las cuotas del alumno
+    @GetMapping("/{id}/cuotas")
+    public ResponseEntity<List<CuotaDTO>> cuotasPorAlumno(@PathVariable Long id) {
+        try {
+            return ResponseEntity.ok(cuotaService.cuotasPorAlumno(id));
+        } catch (RuntimeException e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
+        }
+    }
+
+    // [RF-14] GET /api/alumnos/{id}/situacion-administrativa — Situación administrativa completa
+    @GetMapping("/{id}/situacion-administrativa")
+    public ResponseEntity<SituacionAdministrativaDTO> situacionAdministrativa(@PathVariable Long id) {
+        try {
+            return ResponseEntity.ok(cuotaService.situacionAdministrativa(id));
+        } catch (RuntimeException e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
+        }
     }
 }

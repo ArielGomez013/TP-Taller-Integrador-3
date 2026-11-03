@@ -37,7 +37,7 @@ public class AsistenciaService {
                 .orElseThrow(() -> new RecursoNoEncontradoException("curso", req.cursoId()));
 
         if (!cursoMateriaRepository.existsByCursoIdCursoAndDocenteIdDocente(curso.getIdCurso(), req.docenteId())) {
-            throw new ReglaNegocioException("El docente no tiene asignado este curso (RN13)");
+            throw new ReglaNegocioException("El docente no tiene asignado este curso");
         }
 
         List<AsistenciaDTO> registradas = new ArrayList<>();

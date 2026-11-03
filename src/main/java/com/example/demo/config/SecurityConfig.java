@@ -20,10 +20,10 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                .cors(Customizer.withDefaults()) // Activa la política de CORS para admitir peticiones JS
-                .csrf(csrf -> csrf.disable()) // Deshabilita CSRF (innecesario para APIs REST sin estado)
+                .cors(Customizer.withDefaults()) // activa la política de CORS para admitir peticiones JS
+                .csrf(csrf -> csrf.disable()) // deshabilita CSRF (innecesario para APIs REST sin estado)
                 .sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .authorizeHttpRequests(auth -> auth  // Permite acceso libre a tus endpoints y al HTML estático para pruebas grupales
+                .authorizeHttpRequests(auth -> auth  // permite acceso libre a los endpoints y al HTML estático para pruebas grupales
                         .requestMatchers("/api/**").permitAll()
                         .requestMatchers("/**", "/index.html", "/static/**").permitAll()
                         .anyRequest().authenticated()

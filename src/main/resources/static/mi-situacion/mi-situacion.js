@@ -2,11 +2,11 @@
     const usuarioLogueado = AuthAPI.getUsuario();
 
     if (usuarioLogueado && usuarioLogueado.idAlumno) {
-    // Alumno logueado automáticamente
+
     document.getElementById('card-selector-alumno').classList.add('d-none');
     cargarPortalAlumno(usuarioLogueado.idAlumno);
 } else {
-    // Cargar selector de alumnos
+
     setLoading(true);
     try {
     const alumnos = await AlumnoAPI.listar();
@@ -26,11 +26,12 @@
     async function cargarPortalAlumno(idAlumno) {
     setLoading(true);
     try {
-    const [alumno, inscripciones, calificaciones, asistenciaResumen] = await Promise.all([
+    const [alumno, inscripciones, calificaciones, asistenciaResumen, situacionAdm] = await Promise.all([
     AlumnoAPI.porId(idAlumno),
     InscripcionAPI.porAlumno(idAlumno).catch(() => []),
     CalificacionAPI.porAlumno(idAlumno).catch(() => []),
-    AsistenciaAPI.resumen(idAlumno).catch(() => ({ total: 0, presentes: 0, ausentes: 0, porcentaje: 0 }))
+    AsistenciaAPI.resumen(idAlumno).catch(() => ({ total: 0, presentes: 0, ausentes: 0, porcentaje: 0 })),
+    AlumnoAPI.situacionAdministrativa(idAlumno).catch(() => null)
     ]);
 
     document.getElementById('portal-contenido').classList.remove('d-none');
@@ -95,11 +96,68 @@
           `).join('');
 }
 
+    // ===== SITUACIÓN ADMINISTRATIVA =====
+    renderSituacionAdministrativa(situacionAdm);
+
 } catch (err) {
     showAlert(document.getElementById('alert-container'), err.message, 'danger');
 } finally {
     setLoading(false);
 }
+}
+
+/**
+ * Renderiza la sección de situación administrativa del alumno.
+ * Requerimiento 14: muestra matrícula, cuotas y métricas financieras.
+ */
+function renderSituacionAdministrativa(situacion) {
+    if (!situacion) {
+        document.getElementById('adm-matricula').innerHTML = '<span class="badge bg-secondary fs-6">Sin datos</span>';
+        renderEmpty(document.getElementById('tbody-cuotas'), 6, 'No se pudo cargar la situación administrativa');
+        return;
+    }
+
+    // Estado matrícula
+    const estadoMatBadgeClass = {
+        'ACTIVA':    'bg-success',
+        'PENDIENTE': 'bg-warning text-dark',
+        'CANCELADA': 'bg-danger',
+    }[situacion.estadoMatricula] || 'bg-secondary';
+    document.getElementById('adm-matricula').innerHTML =
+        `<span class="badge ${estadoMatBadgeClass} fs-6">${escapeHtml(situacion.estadoMatricula)}</span>`;
+
+    // Métricas
+    document.getElementById('adm-pendientes').textContent = situacion.cuotasPendientes ?? 0;
+    document.getElementById('adm-vencidas').textContent   = situacion.cuotasVencidas   ?? 0;
+    document.getElementById('adm-pagadas').textContent    = situacion.cuotasPagadas    ?? 0;
+    document.getElementById('adm-adeudado').textContent   = formatCurrency(situacion.importeAdeudado);
+    document.getElementById('adm-abonado').textContent    = formatCurrency(situacion.totalAbonado);
+
+    // Tabla de cuotas
+    const tbody = document.getElementById('tbody-cuotas');
+    if (!situacion.cuotas || situacion.cuotas.length === 0) {
+        renderEmpty(tbody, 6, 'No hay cuotas generadas aún');
+        return;
+    }
+
+    tbody.innerHTML = situacion.cuotas.map((c, idx) => {
+        const rowClass = {
+            'PAGADA':    'table-success',
+            'VENCIDA':   'table-danger',
+            'PENDIENTE': 'table-warning',
+            'ANULADA':   'table-secondary',
+        }[c.estado] || '';
+
+        return `
+        <tr class="${rowClass}">
+          <td class="text-muted small">${idx + 1}</td>
+          <td><strong>Cuota ${c.numeroCuota}</strong></td>
+          <td>${formatDate(c.fechaVencimiento)}</td>
+          <td>${formatCurrency(c.importe)}</td>
+          <td>${c.estado === 'PAGADA' ? '<span class="text-success fw-bold">$ 0,00</span>' : formatCurrency(c.saldo)}</td>
+          <td>${badgeEstadoCuota(c.estado)}</td>
+        </tr>`;
+    }).join('');
 }
 
     document.getElementById('btn-cargar-mi-portal').addEventListener('click', () => {

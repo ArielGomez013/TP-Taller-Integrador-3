@@ -1,12 +1,12 @@
-/**
- * api.js — Módulo central de comunicación con el backend Spring Boot
+﻿/**
+ * api.js â€” Módulo central de comunicación con el backend Spring Boot
  * Base URL: http://localhost:8080/api
  */
 
 const API_BASE = 'http://localhost:8080/api';
 
 /* ============================================================
-   HELPER CENTRAL — apiFetch
+   HELPER CENTRAL - apiFetch
    ============================================================ */
 async function apiFetch(url, options = {}) {
   const defaultHeaders = { 'Content-Type': 'application/json' };
@@ -48,7 +48,7 @@ async function apiFetch(url, options = {}) {
 }
 
 /* ============================================================
-   AUTH API — Gestión de Sesión y Acceso
+   AUTH API - Gestión de Sesión y Acceso
    ============================================================ */
 const AuthAPI = {
   async login(username, password) {
@@ -122,6 +122,14 @@ const AlumnoAPI = {
   },
   eliminar(id) {
     return apiFetch(`/alumnos/${id}`, { method: 'DELETE' });
+  },
+  // [RF-14] Cuotas del alumno
+  cuotas(id) {
+    return apiFetch(`/alumnos/${id}/cuotas`);
+  },
+  // [RF-14] Situacion administrativa completa
+  situacionAdministrativa(id) {
+    return apiFetch(`/alumnos/${id}/situacion-administrativa`);
   }
 };
 
@@ -174,6 +182,13 @@ const CursoAPI = {
   },
   asignarMateria(idCurso, data) {
     return apiFetch(`/cursos/${idCurso}/materias`, {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+  },
+  // POST /api/cursos/{id}/asistencias
+  registrarAsistencias(cursoId, data) {
+    return apiFetch(`/cursos/${cursoId}/asistencias`, {
       method: 'POST',
       body: JSON.stringify(data),
     });
@@ -364,6 +379,17 @@ const EvaluacionAPI = {
       body: JSON.stringify(data),
     });
   },
+  // POST /api/evaluaciones/{id}/calificaciones
+  registrarCalificacion(evaluacionId, data) {
+    return apiFetch(`/evaluaciones/${evaluacionId}/calificaciones`, {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+  },
+  // GET /api/evaluaciones/{id}/calificaciones
+  calificaciones(evaluacionId) {
+    return apiFetch(`/evaluaciones/${evaluacionId}/calificaciones`);
+  }
 };
 
 /* ============================================================
@@ -391,7 +417,7 @@ const CalificacionAPI = {
 };
 
 /* ============================================================
-   RELACIONADOS API — Entidades auxiliares
+   RELACIONADOS API - Entidades auxiliares
    ============================================================ */
 const RelacionadosAPI = {
   alumnos()       { return apiFetch('/alumnos'); },
@@ -447,7 +473,7 @@ function escapeHtml(str) {
 }
 
 function formatDate(isoDate) {
-  if (!isoDate) return '—';
+  if (!isoDate) return '-';
   const [y, m, d] = isoDate.split('T')[0].split('-');
   return `${d}/${m}/${y}`;
 }
@@ -477,6 +503,17 @@ function badgeNota(nota) {
   if (nota >= 6) cls = 'badge-nota-alta';
   else if (nota >= 4) cls = 'badge-nota-media';
   return `<span class="badge ${cls} fs-6">${nota}</span>`;
+}
+
+function badgeEstadoCuota(estado) {
+  const map = {
+    PAGADA:    { cls: 'bg-success', icon: 'bi-check-circle-fill' },
+    PENDIENTE: { cls: 'bg-warning text-dark', icon: 'bi-clock' },
+    VENCIDA:   { cls: 'bg-danger', icon: 'bi-exclamation-triangle-fill' },
+    ANULADA:   { cls: 'bg-secondary', icon: 'bi-x-circle' },
+  };
+  const { cls, icon } = map[estado] || { cls: 'bg-secondary', icon: 'bi-question' };
+  return `<span class=\"badge ${cls}\"><i class=\"bi ${icon} me-1\"></i>${escapeHtml(estado)}</span>`;
 }
 
 function badgeTipoEvaluacion(tipo) {
