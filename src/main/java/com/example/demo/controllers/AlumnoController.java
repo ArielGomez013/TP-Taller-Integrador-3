@@ -31,8 +31,13 @@ public class AlumnoController {
     }
 
     @GetMapping("/{id}")
-    public Optional<Alumno> buscarPorId(@PathVariable Long id) {
-        return alumnoService.buscarPorId(id);
+    public Alumno buscarPorId(@PathVariable Long id) {
+        return alumnoService.buscarPorId(id)
+                .orElseThrow(() ->
+                        new ResponseStatusException(
+                                HttpStatus.NOT_FOUND,
+                                "Alumno no encontrado"
+                        ));
     }
 
     @PostMapping
@@ -62,7 +67,7 @@ public class AlumnoController {
         return alumnoService.guardar(alumno);
     }
 
-    // [RF-14] GET /api/alumnos/{id}/cuotas — Lista todas las cuotas del alumno
+
     @GetMapping("/{id}/cuotas")
     public ResponseEntity<List<CuotaDTO>> cuotasPorAlumno(@PathVariable Long id) {
         try {
@@ -72,7 +77,7 @@ public class AlumnoController {
         }
     }
 
-    // [RF-14] GET /api/alumnos/{id}/situacion-administrativa — Situación administrativa completa
+
     @GetMapping("/{id}/situacion-administrativa")
     public ResponseEntity<SituacionAdministrativaDTO> situacionAdministrativa(@PathVariable Long id) {
         try {

@@ -53,7 +53,6 @@ public class CursoService {
                 .capacidadMaxima(dto.getCapacidadMaxima())
                 .cicloLectivo(ciclo)
                 .build();
-
         return cursoRepository.save(curso);
     }
 }

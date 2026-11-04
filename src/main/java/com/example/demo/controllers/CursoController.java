@@ -44,13 +44,13 @@ public class CursoController {
         return new ResponseEntity<>(cursoService.crear(dto), HttpStatus.CREATED);
     }
 
-    // POST /api/cursos/{id}/asistencias — Registra asistencias para este curso
+    // POST /api/cursos/{id}/asistencias — se registra asistencias para este curso
     @PostMapping("/{id}/asistencias")
     @ResponseStatus(HttpStatus.CREATED)
     public List<AsistenciaDTO> registrarAsistencias(
             @PathVariable Long id,
             @Valid @RequestBody AsistenciaCursoRequest req) {
-        // Forzamos el cursoId desde la URL para coherencia REST
+        // se fuerza el cursoId desde la URL para una coherencia REST
         AsistenciaCursoRequest reqConId = new AsistenciaCursoRequest(
                 req.docenteId(),
                 id,

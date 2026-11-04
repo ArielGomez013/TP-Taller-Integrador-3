@@ -29,9 +29,10 @@ public class Curso {
     @Column(name = "capacidad_maxima", nullable = false) // Regla de Negocio RN02: Capacidad máxima del aula para validar cupos al inscribir
     private Integer capacidadMaxima;
 
-    @ManyToOne(fetch = FetchType.EAGER)  //Varios cursos pertenecen a un mismo Ciclo Lectivo
-    @JoinColumn(name = "id_ciclo", nullable = false)   //fk
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "id_ciclo", nullable = false)
     private CicloLectivo cicloLectivo;
+
 
     public String getNombre() {
         return this.anioCursado + "° Año \"" + this.division + "\"";
